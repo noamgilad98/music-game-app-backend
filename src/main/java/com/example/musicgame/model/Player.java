@@ -6,18 +6,17 @@ import java.util.List;
 
 @Entity
 public class Player {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Card> deck = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany
     private List<Card> timeline = new ArrayList<>();
+
+    @OneToMany
+    private List<Card> deck = new ArrayList<>();
 
     public Player() {
     }
@@ -43,19 +42,19 @@ public class Player {
         this.name = name;
     }
 
-    public List<Card> getDeck() {
-        return deck;
-    }
-
-    public void setDeck(List<Card> deck) {
-        this.deck = deck;
-    }
-
     public List<Card> getTimeline() {
         return timeline;
     }
 
     public void setTimeline(List<Card> timeline) {
         this.timeline = timeline;
+    }
+
+    public List<Card> getDeck() {
+        return deck;
+    }
+
+    public void setDeck(List<Card> deck) {
+        this.deck = deck;
     }
 }

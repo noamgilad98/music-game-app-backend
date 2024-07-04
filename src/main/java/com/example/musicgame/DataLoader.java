@@ -23,7 +23,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        cardService.resetCardIdSequence();
+        //cardService.resetCardIdSequence();
 
         if (cardRepository.count() == 0) {
             for (String trackId : TrackIds.TRACK_IDS) {

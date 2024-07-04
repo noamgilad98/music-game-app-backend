@@ -7,14 +7,10 @@ import com.example.musicgame.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class GameService {
-
     @Autowired
     private CardRepository cardRepository;
     @Autowired
@@ -25,45 +21,40 @@ public class GameService {
     }
 
     public Card startGame(Player player) {
-        List<Card> cards = cardRepository.findAll();
-        if (cards.isEmpty()) {
+        List<Card> allCards = cardRepository.findAll();
+        if (allCards.isEmpty()) {
             throw new IllegalStateException("No cards available");
         }
 
-        // Shuffle and initialize the player's deck
-        Collections.shuffle(cards);
-        player.setDeck(cards);
+        // Initialize the player's deck with a shuffled copy of all cards
+        List<Card> playerDeck = shuffleDeck(allCards);
+        player.setDeck(playerDeck);
         playerRepository.save(player);
 
-        // Draw the first card
-        return drawCard(player);
+        return drawCardFromDeck(player);
     }
 
     public Card getCard(Long playerId) {
         Optional<Player> playerOpt = playerRepository.findById(playerId);
         if (playerOpt.isPresent()) {
             Player player = playerOpt.get();
-            return drawCard(player);
+            return drawCardFromDeck(player);
         } else {
             throw new IllegalArgumentException("Invalid player ID");
         }
     }
 
-    private Card drawCard(Player player) {
-        List<Card> deck = player.getDeck();
-        if (deck.isEmpty()) {
-            throw new IllegalStateException("No more cards available in the deck");
-        }
-
-        Card card = deck.remove(0);
-        player.setDeck(deck);
-        playerRepository.save(player);
-        return card;
-    }
-
     public boolean submitCard(Long playerId, Card card) {
-        // Implement logic for submitting card (e.g., updating player timeline)
-        return true;
+        Optional<Player> playerOpt = playerRepository.findById(playerId);
+        if (playerOpt.isPresent()) {
+            Player player = playerOpt.get();
+            List<Card> timeline = player.getTimeline();
+            timeline.add(card);
+            player.setTimeline(timeline);
+            playerRepository.save(player);
+            return true;
+        }
+        return false;
     }
 
     public boolean submitTimeline(Long playerId, List<Card> timeline) {
@@ -96,5 +87,58 @@ public class GameService {
             }
         }
         return true;
+    }
+
+    private Card getRandomCard(List<Card> cards) {
+        Random random = new Random();
+        int index = random.nextInt(cards.size());
+        return cards.get(index);
+    }
+
+    private List<Card> shuffleDeck(List<Card> cards) {
+        List<Card> shuffledDeck = new ArrayList<>(cards);
+        Random random = new Random();
+        for (int i = shuffledDeck.size() - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            Card temp = shuffledDeck.get(i);
+            shuffledDeck.set(i, shuffledDeck.get(j));
+            shuffledDeck.set(j, temp);
+        }
+        return shuffledDeck;
+    }
+
+    private Card drawCardFromDeck(Player player) {
+        List<Card> deck = player.getDeck();
+        if (deck.isEmpty()) {
+            throw new IllegalStateException("No more cards in the deck");
+        }
+        Card drawnCard = deck.remove(0);
+        player.setDeck(deck);
+        playerRepository.save(player);
+        return drawnCard;
+    }
+
+    public Map<String, Object> submitAndValidate(Long playerId, Card card) {
+        Map<String, Object> response = new HashMap<>();
+        boolean isValid = false;
+        boolean hasWon = false;
+
+        Optional<Player> playerOpt = playerRepository.findById(playerId);
+        if (playerOpt.isPresent()) {
+            Player player = playerOpt.get();
+            List<Card> timeline = player.getTimeline();
+            timeline.add(card);
+            player.setTimeline(timeline);
+            playerRepository.save(player);
+
+            isValid = isTimelineValid(timeline);
+            hasWon = timeline.size() >= 10;
+        } else {
+            throw new IllegalArgumentException("Invalid player ID");
+        }
+
+        response.put("isValid", isValid);
+        response.put("hasWon", hasWon);
+        return response;
     }
 }

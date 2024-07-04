@@ -18,7 +18,6 @@ public class GameController {
     @Autowired
     private GameService gameService;
 
-    // Add a logger to the controller
     private static final Logger logger = LoggerFactory.getLogger(GameController.class);
 
     @PostMapping("/start")
@@ -45,8 +44,6 @@ public class GameController {
         return gameService.submitCard(playerId, card);
     }
 
-    // Add the following methods to your GameController class
-
     @PostMapping("/submit-timeline")
     public boolean submitTimeline(@RequestParam Long playerId, @RequestBody List<Card> timeline) {
         logger.info("Submitting timeline for player: {}", playerId);
@@ -59,4 +56,9 @@ public class GameController {
         return gameService.validateTimeline(playerId);
     }
 
+    @PostMapping("/submit-and-validate")
+    public Map<String, Object> submitAndValidate(@RequestParam Long playerId, @RequestBody Card card) {
+        logger.info("Submitting and validating card for player: {}", playerId);
+        return gameService.submitAndValidate(playerId, card);
+    }
 }
