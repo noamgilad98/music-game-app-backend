@@ -48,6 +48,40 @@ public class GameService {
         return true;
     }
 
+    // Add the following methods to your GameService class
+
+    public boolean submitTimeline(Long playerId, List<Card> timeline) {
+        Optional<Player> playerOpt = playerRepository.findById(playerId);
+        if (playerOpt.isPresent()) {
+            Player player = playerOpt.get();
+            player.setTimeline(timeline);
+            playerRepository.save(player);
+            return true;
+        } else {
+            throw new IllegalArgumentException("Invalid player ID");
+        }
+    }
+
+    public boolean validateTimeline(Long playerId) {
+        Optional<Player> playerOpt = playerRepository.findById(playerId);
+        if (playerOpt.isPresent()) {
+            Player player = playerOpt.get();
+            List<Card> timeline = player.getTimeline();
+            return isTimelineValid(timeline);
+        } else {
+            throw new IllegalArgumentException("Invalid player ID");
+        }
+    }
+
+    private boolean isTimelineValid(List<Card> timeline) {
+        for (int i = 1; i < timeline.size(); i++) {
+            if (timeline.get(i).getYear() < timeline.get(i - 1).getYear()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private Card getRandomCard(List<Card> cards) {
         Random random = new Random();
         int index = random.nextInt(cards.size());

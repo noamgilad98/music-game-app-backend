@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,4 +44,19 @@ public class GameController {
     public boolean submitCard(@RequestParam Long playerId, @RequestBody Card card) {
         return gameService.submitCard(playerId, card);
     }
+
+    // Add the following methods to your GameController class
+
+    @PostMapping("/submit-timeline")
+    public boolean submitTimeline(@RequestParam Long playerId, @RequestBody List<Card> timeline) {
+        logger.info("Submitting timeline for player: {}", playerId);
+        return gameService.submitTimeline(playerId, timeline);
+    }
+
+    @GetMapping("/validate-timeline")
+    public boolean validateTimeline(@RequestParam Long playerId) {
+        logger.info("Validating timeline for player: {}", playerId);
+        return gameService.validateTimeline(playerId);
+    }
+
 }
