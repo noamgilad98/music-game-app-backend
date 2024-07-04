@@ -12,16 +12,18 @@ public class Card {
     private String artist;
     private int year;
     private String spotifyCode;
+    private String previewUrl;
     private boolean isFaceUp;
 
     public Card() {
     }
 
-    public Card(String songName, String artist, int year, String spotifyCode) {
+    public Card(String songName, String artist, int year, String spotifyCode, String previewUrl) {
         this.songName = songName;
         this.artist = artist;
         this.year = year;
         this.spotifyCode = spotifyCode;
+        this.previewUrl = previewUrl;
         this.isFaceUp = true;
     }
 
@@ -64,6 +66,14 @@ public class Card {
 
     public void setSpotifyCode(String spotifyCode) {
         this.spotifyCode = spotifyCode;
+    }
+
+    public String getPreviewUrl() {
+        return previewUrl;
+    }
+
+    public void setPreviewUrl(String previewUrl) {
+        this.previewUrl = previewUrl;
     }
 
     public boolean isFaceUp() {

@@ -30,7 +30,7 @@ public class DataLoader implements CommandLineRunner {
                 try {
                     Track track = spotifyService.getTrack(trackId);
                     if (track != null && track.getAlbum() != null && track.getArtists() != null && track.getArtists().length > 0) {
-                        if (track.getPreview_url().isEmpty()){
+                        if (track.getPreview_url() == null || track.getPreview_url().isEmpty()) {
                             System.out.println("Track with ID: " + trackId + " has no preview URL, skipping...");
                             continue;
                         }
@@ -39,12 +39,12 @@ public class DataLoader implements CommandLineRunner {
                                 track.getName(),
                                 track.getArtists()[0].getName(),
                                 releaseYear,
-                                track.getUri()
+                                track.getUri(),
+                                track.getPreview_url()
                         );
                         cardRepository.save(card);
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     System.out.println("Failed to load track with ID: " + trackId);
                 }
             }
