@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
 @Entity
 public class Player {
     @Id
@@ -15,11 +14,11 @@ public class Player {
 
     @OneToOne
     @JoinColumn(name = "deck_id")
-    @JsonManagedReference
+    @JsonManagedReference("player-deck")
     private Deck deck;
 
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonManagedReference("player-timelines")
     private Set<Timeline> timelines = new HashSet<>();
 
     // Getters and Setters

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
 @Entity
 public class Timeline {
     @Id
@@ -13,7 +12,7 @@ public class Timeline {
 
     @ManyToOne
     @JoinColumn(name = "player_id")
-    @JsonBackReference
+    @JsonBackReference("player-timelines")
     private Player player;
 
     @ManyToMany

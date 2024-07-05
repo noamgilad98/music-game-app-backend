@@ -12,7 +12,7 @@ public class Deck {
     private Long id;
 
     @OneToOne(mappedBy = "deck")
-    @JsonBackReference
+    @JsonBackReference("player-deck")
     private Player player;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -21,7 +21,7 @@ public class Deck {
             joinColumns = @JoinColumn(name = "deck_id"),
             inverseJoinColumns = @JoinColumn(name = "card_id")
     )
-    @JsonBackReference // Prevent serialization of cards' reference to deck
+    @JsonBackReference("deck-cards")
     private Set<Card> cards = new HashSet<>();
 
     // Default constructor
