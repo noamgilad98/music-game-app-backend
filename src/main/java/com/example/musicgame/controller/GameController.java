@@ -7,14 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/game")
 public class GameController {
+
     @Autowired
     private GameService gameService;
 
@@ -36,6 +37,7 @@ public class GameController {
 
     @GetMapping("/get-card")
     public Card getCard(@RequestParam Long playerId) {
+        logger.info("Getting card for player: {}", playerId);
         return gameService.getCard(playerId);
     }
 
@@ -45,7 +47,7 @@ public class GameController {
     }
 
     @PostMapping("/submit-timeline")
-    public boolean submitTimeline(@RequestParam Long playerId, @RequestBody List<Card> timeline) {
+    public boolean submitTimeline(@RequestParam Long playerId, @RequestBody Set<Card> timeline) {
         logger.info("Submitting timeline for player: {}", playerId);
         return gameService.submitTimeline(playerId, timeline);
     }

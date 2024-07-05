@@ -1,33 +1,43 @@
 package com.example.musicgame.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String songName;
     private String artist;
     private int year;
     private String spotifyCode;
-    private String previewUrl;
     private boolean isFaceUp;
 
+    @ManyToMany(mappedBy = "cards", fetch = FetchType.LAZY)
+    @JsonManagedReference // Allow serialization of decks' reference in card
+    private Set<Deck> decks = new HashSet<>();
+
+    @ManyToMany(mappedBy = "cards", fetch = FetchType.LAZY)
+    @JsonManagedReference // Allow serialization of timelines' reference in card
+    private Set<Timeline> timelines = new HashSet<>();
+
+    // Default constructor
     public Card() {
     }
 
-    public Card(String songName, String artist, int year, String spotifyCode, String previewUrl) {
+    // Constructor with parameters
+    public Card(String songName, String artist, int year, String spotifyCode) {
         this.songName = songName;
         this.artist = artist;
         this.year = year;
         this.spotifyCode = spotifyCode;
-        this.previewUrl = previewUrl;
-        this.isFaceUp = true;
+        this.isFaceUp = false;
     }
 
-    // Getters and setters
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -68,19 +78,27 @@ public class Card {
         this.spotifyCode = spotifyCode;
     }
 
-    public String getPreviewUrl() {
-        return previewUrl;
-    }
-
-    public void setPreviewUrl(String previewUrl) {
-        this.previewUrl = previewUrl;
-    }
-
     public boolean isFaceUp() {
         return isFaceUp;
     }
 
-    public void setFaceUp(boolean faceUp) {
-        isFaceUp = faceUp;
+    public void setFaceUp(boolean isFaceUp) {
+        this.isFaceUp = isFaceUp;
+    }
+
+    public Set<Deck> getDecks() {
+        return decks;
+    }
+
+    public void setDecks(Set<Deck> decks) {
+        this.decks = decks;
+    }
+
+    public Set<Timeline> getTimelines() {
+        return timelines;
+    }
+
+    public void setTimelines(Set<Timeline> timelines) {
+        this.timelines = timelines;
     }
 }

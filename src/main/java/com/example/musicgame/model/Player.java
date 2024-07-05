@@ -1,31 +1,28 @@
 package com.example.musicgame.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
 
-    @OneToMany
-    private List<Card> timeline = new ArrayList<>();
+    @OneToOne
+    @JoinColumn(name = "deck_id")
+    @JsonManagedReference
+    private Deck deck;
 
-    @OneToMany
-    private List<Card> deck = new ArrayList<>();
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private Set<Timeline> timelines = new HashSet<>();
 
-    public Player() {
-    }
-
-    public Player(String name) {
-        this.name = name;
-    }
-
-    // Getters and setters
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -42,19 +39,19 @@ public class Player {
         this.name = name;
     }
 
-    public List<Card> getTimeline() {
-        return timeline;
-    }
-
-    public void setTimeline(List<Card> timeline) {
-        this.timeline = timeline;
-    }
-
-    public List<Card> getDeck() {
+    public Deck getDeck() {
         return deck;
     }
 
-    public void setDeck(List<Card> deck) {
+    public void setDeck(Deck deck) {
         this.deck = deck;
+    }
+
+    public Set<Timeline> getTimelines() {
+        return timelines;
+    }
+
+    public void setTimelines(Set<Timeline> timelines) {
+        this.timelines = timelines;
     }
 }

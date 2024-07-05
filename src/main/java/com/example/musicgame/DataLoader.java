@@ -23,14 +23,12 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        //cardService.resetCardIdSequence();
-
         if (cardRepository.count() == 0) {
             for (String trackId : TrackIds.TRACK_IDS) {
                 try {
                     Track track = spotifyService.getTrack(trackId);
                     if (track != null && track.getAlbum() != null && track.getArtists() != null && track.getArtists().length > 0) {
-                        if (track.getPreview_url() == null || track.getPreview_url().isEmpty()) {
+                        if (track.getPreview_url().isEmpty()) {
                             System.out.println("Track with ID: " + trackId + " has no preview URL, skipping...");
                             continue;
                         }
@@ -39,8 +37,7 @@ public class DataLoader implements CommandLineRunner {
                                 track.getName(),
                                 track.getArtists()[0].getName(),
                                 releaseYear,
-                                track.getUri(),
-                                track.getPreview_url()
+                                track.getUri()
                         );
                         cardRepository.save(card);
                     }
