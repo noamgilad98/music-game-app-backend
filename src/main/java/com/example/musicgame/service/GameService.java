@@ -1,8 +1,11 @@
 package com.example.musicgame.service;
 
 import com.example.musicgame.model.Card;
+import com.example.musicgame.model.Game;
+import com.example.musicgame.model.GameState;
 import com.example.musicgame.model.Player;
 import com.example.musicgame.repository.CardRepository;
+import com.example.musicgame.repository.GameRepository;
 import com.example.musicgame.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,8 @@ public class GameService {
     private CardRepository cardRepository;
     @Autowired
     private PlayerRepository playerRepository;
+    @Autowired
+    private GameRepository gameRepository;
 
     public Player savePlayer(Player player) {
         return playerRepository.save(player);
@@ -22,23 +27,22 @@ public class GameService {
 
     public Card startGame(Player player) {
         List<Card> allCards = cardRepository.findAll();
-        if (allCards.isEmpty()) {
-            throw new IllegalStateException("No cards available");
-        }
+        Collections.shuffle(allCards); // Shuffle cards to randomize the deck
+        Game game = new Game(player, allCards, GameState.NOT_STARTED);
+        game = gameRepository.save(game); // Save the game to ensure persistence
 
-        // Initialize the player's deck with a shuffled copy of all cards
-        List<Card> playerDeck = shuffleDeck(allCards);
-        player.setDeck(playerDeck);
+        player.setGame(game);
         playerRepository.save(player);
 
-        return drawCardFromDeck(player);
+        return drawCardFromDeck(game);
     }
 
     public Card getCard(Long playerId) {
         Optional<Player> playerOpt = playerRepository.findById(playerId);
         if (playerOpt.isPresent()) {
             Player player = playerOpt.get();
-            return drawCardFromDeck(player);
+            Game game = player.getGame();
+            return drawCardFromDeck(game);
         } else {
             throw new IllegalArgumentException("Invalid player ID");
         }
@@ -48,6 +52,7 @@ public class GameService {
         Optional<Player> playerOpt = playerRepository.findById(playerId);
         if (playerOpt.isPresent()) {
             Player player = playerOpt.get();
+            Game game = player.getGame();
             List<Card> timeline = player.getTimeline();
             timeline.add(card);
             player.setTimeline(timeline);
@@ -89,32 +94,13 @@ public class GameService {
         return true;
     }
 
-    private Card getRandomCard(List<Card> cards) {
-        Random random = new Random();
-        int index = random.nextInt(cards.size());
-        return cards.get(index);
-    }
-
-    private List<Card> shuffleDeck(List<Card> cards) {
-        List<Card> shuffledDeck = new ArrayList<>(cards);
-        Random random = new Random();
-        for (int i = shuffledDeck.size() - 1; i > 0; i--) {
-            int j = random.nextInt(i + 1);
-            Card temp = shuffledDeck.get(i);
-            shuffledDeck.set(i, shuffledDeck.get(j));
-            shuffledDeck.set(j, temp);
-        }
-        return shuffledDeck;
-    }
-
-    private Card drawCardFromDeck(Player player) {
-        List<Card> deck = player.getDeck();
+    private Card drawCardFromDeck(Game game) {
+        List<Card> deck = game.getCards();
         if (deck.isEmpty()) {
             throw new IllegalStateException("No more cards in the deck");
         }
         Card drawnCard = deck.remove(0);
-        player.setDeck(deck);
-        playerRepository.save(player);
+        gameRepository.save(game); // Update the game with the new state of the deck
         return drawnCard;
     }
 

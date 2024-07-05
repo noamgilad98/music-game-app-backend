@@ -40,10 +40,11 @@ public class SpotifyService {
 
         HttpEntity<String> request = new HttpEntity<>(body, headers);
 
-        ResponseEntity<Map> response = restTemplate.postForEntity(
+        ResponseEntity<Map<String, String>> response = restTemplate.exchange(
                 "https://accounts.spotify.com/api/token",
+                HttpMethod.POST,
                 request,
-                Map.class
+                (Class<Map<String, String>>)(Class<?>)Map.class // Add type safety here
         );
 
         Map<String, String> responseBody = response.getBody();

@@ -1,5 +1,6 @@
 package com.example.musicgame.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,20 +13,23 @@ public class Player {
 
     private String name;
 
+    @OneToOne(mappedBy = "player")
+    @JsonBackReference
+    private Game game;
+
     @OneToMany
     private List<Card> timeline = new ArrayList<>();
 
-    @OneToMany
-    private List<Card> deck = new ArrayList<>();
-
+    // Default constructor
     public Player() {
     }
 
+    // Constructor with parameters
     public Player(String name) {
         this.name = name;
     }
 
-    // Getters and setters
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -42,19 +46,19 @@ public class Player {
         this.name = name;
     }
 
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
     public List<Card> getTimeline() {
         return timeline;
     }
 
     public void setTimeline(List<Card> timeline) {
         this.timeline = timeline;
-    }
-
-    public List<Card> getDeck() {
-        return deck;
-    }
-
-    public void setDeck(List<Card> deck) {
-        this.deck = deck;
     }
 }

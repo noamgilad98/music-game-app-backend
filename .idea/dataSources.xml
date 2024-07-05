@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="xbkikoqh@raja.db.elephantsql.com" uuid="5084a9ca-4aed-43b6-9036-bc2dcca7c824">
+    <data-source source="LOCAL" name="xbkikoqh@raja.db.elephantsql.com" uuid="35940357-7a7d-4b96-b8c4-2b69bffeb2a5">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <imported>true</imported>

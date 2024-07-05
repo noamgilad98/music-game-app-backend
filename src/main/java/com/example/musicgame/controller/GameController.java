@@ -20,17 +20,12 @@ public class GameController {
 
     private static final Logger logger = LoggerFactory.getLogger(GameController.class);
 
-    @PostMapping("/start")
+    @PostMapping("/start-game")
     public Map<String, Object> startGame(@RequestBody Player player) {
         logger.info("Starting game for player: {}", player.getName());
-        Player savedPlayer = gameService.savePlayer(player);
-        Card initialCard = gameService.startGame(savedPlayer);
-        logger.info("Player saved: {}", savedPlayer);
-        logger.info("Initial card: {}", initialCard);
-
         Map<String, Object> response = new HashMap<>();
-        response.put("player", savedPlayer);
-        response.put("card", initialCard);
+        response.put("player", gameService.savePlayer(player));
+        response.put("card", gameService.startGame(player));
         return response;
     }
 

@@ -8,12 +8,12 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String songName;
     private String artist;
+    private String songName;
     private int year;
-    private String spotifyCode;
     private String previewUrl;
     private boolean isFaceUp;
+    private String spotifyCode;
 
     public Card() {
     }
@@ -24,7 +24,6 @@ public class Card {
         this.year = year;
         this.spotifyCode = spotifyCode;
         this.previewUrl = previewUrl;
-        this.isFaceUp = true;
     }
 
     // Getters and setters

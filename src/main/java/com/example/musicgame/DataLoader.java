@@ -8,6 +8,8 @@ import com.example.musicgame.service.SpotifyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class DataLoader implements CommandLineRunner {
@@ -21,6 +23,8 @@ public class DataLoader implements CommandLineRunner {
     @Autowired
     private CardService cardService;
 
+    private static final Logger logger = LoggerFactory.getLogger(DataLoader.class);
+
     @Override
     public void run(String... args) throws Exception {
         //cardService.resetCardIdSequence();
@@ -31,7 +35,7 @@ public class DataLoader implements CommandLineRunner {
                     Track track = spotifyService.getTrack(trackId);
                     if (track != null && track.getAlbum() != null && track.getArtists() != null && track.getArtists().length > 0) {
                         if (track.getPreview_url() == null || track.getPreview_url().isEmpty()) {
-                            System.out.println("Track with ID: " + trackId + " has no preview URL, skipping...");
+                            logger.warn("Track with ID: {} has no preview URL, skipping...", trackId);
                             continue;
                         }
                         int releaseYear = Integer.parseInt(track.getAlbum().getRelease_date().substring(0, 4));
@@ -43,9 +47,10 @@ public class DataLoader implements CommandLineRunner {
                                 track.getPreview_url()
                         );
                         cardRepository.save(card);
+                        logger.info("Saved card: {}", card);
                     }
                 } catch (Exception e) {
-                    System.out.println("Failed to load track with ID: " + trackId);
+                    logger.error("Failed to load track with ID: {}", trackId, e);
                 }
             }
         }
