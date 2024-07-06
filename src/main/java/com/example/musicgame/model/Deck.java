@@ -1,7 +1,8 @@
 package com.example.musicgame.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -11,15 +12,17 @@ public class Deck {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "deck", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Card> cards;
+    private String name;
 
-    public Deck() {
-    }
+    @OneToMany(mappedBy = "deck", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "deck-cards")
+    private List<Card> cards;
 
     public Deck(List<Card> cards) {
         this.cards = cards;
     }
+
+    // other fields, getters, and setters
 
     public Long getId() {
         return id;
@@ -27,6 +30,14 @@ public class Deck {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<Card> getCards() {
@@ -38,10 +49,6 @@ public class Deck {
     }
 
     public Card drawCard() {
-        return cards.remove(0);
-    }
-
-    public void shuffle() {
-        Collections.shuffle(cards);
+        return null;
     }
 }

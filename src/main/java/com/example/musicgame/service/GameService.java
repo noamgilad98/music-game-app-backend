@@ -45,9 +45,11 @@ public class GameService {
 
     public Game addPlayerToGame(Long gameId, User user) {
         Game game = getGameById(gameId);
-        User existingUser = userRepository.findByUsername(user.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        game.getPlayers().add(existingUser);
+        Player player = new Player();
+        player.setName(user.getUsername());
+        player.setGame(game);
+        playerRepository.save(player);  // Save the player to the repository
+        game.getPlayers().add(player);
         return gameRepository.save(game);
     }
 
@@ -61,7 +63,7 @@ public class GameService {
         Game game = getGameById(gameId);
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new RuntimeException("Player not found"));
         Card drawnCard = game.getDeck().drawCard();
-        player.addCardToHand(drawnCard);
+        //player.addCardToHand(drawnCard);
         playerRepository.save(player);
         return drawnCard;
     }

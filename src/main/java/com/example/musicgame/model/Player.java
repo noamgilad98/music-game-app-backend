@@ -1,38 +1,33 @@
 package com.example.musicgame.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Player {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "game_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_id", nullable = false)
+    @JsonBackReference(value = "game-players")
     private Game game;
 
-    @ManyToMany
-    @JoinTable(
-            name = "player_timeline",
-            joinColumns = @JoinColumn(name = "player_id"),
-            inverseJoinColumns = @JoinColumn(name = "card_id")
-    )
-    private List<Card> timeline = new ArrayList<>();
+    @OneToMany(mappedBy = "playerHand", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "player-hand")
+    private List<Card> hand;
 
-    @ManyToMany
-    @JoinTable(
-            name = "player_hand",
-            joinColumns = @JoinColumn(name = "player_id"),
-            inverseJoinColumns = @JoinColumn(name = "card_id")
-    )
-    private List<Card> hand = new ArrayList<>();
+    @OneToMany(mappedBy = "playerTimeline", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "player-timeline")
+    private List<Card> timeline;
 
-    // getters and setters
+    // other fields, getters, and setters
 
     public Long getId() {
         return id;
@@ -58,14 +53,6 @@ public class Player {
         this.game = game;
     }
 
-    public List<Card> getTimeline() {
-        return timeline;
-    }
-
-    public void setTimeline(List<Card> timeline) {
-        this.timeline = timeline;
-    }
-
     public List<Card> getHand() {
         return hand;
     }
@@ -74,7 +61,11 @@ public class Player {
         this.hand = hand;
     }
 
-    public void addCardToHand(Card card) {
-        this.hand.add(card);
+    public List<Card> getTimeline() {
+        return timeline;
+    }
+
+    public void setTimeline(List<Card> timeline) {
+        this.timeline = timeline;
     }
 }

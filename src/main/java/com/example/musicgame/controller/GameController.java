@@ -3,6 +3,7 @@ package com.example.musicgame.controller;
 import com.example.musicgame.model.Card;
 import com.example.musicgame.model.Game;
 import com.example.musicgame.model.Player;
+import com.example.musicgame.model.User;
 import com.example.musicgame.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

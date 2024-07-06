@@ -83,12 +83,9 @@ public class IntegrationTest {
 
         Long gameId = gameResponse.getBody().getId();
 
-        // Add users to game
-        HttpEntity<Void> addUserRequest1 = new HttpEntity<>(createHeaders(token1));
-        ResponseEntity<Void> addUserResponse1 = restTemplate.postForEntity("http://localhost:" + port + "/game/" + gameId + "/start", addUserRequest1, Void.class);
-
-        HttpEntity<Void> addUserRequest2 = new HttpEntity<>(createHeaders(token2));
-        ResponseEntity<Void> addUserResponse2 = restTemplate.postForEntity("http://localhost:" + port + "/game/" + gameId + "/start", addUserRequest2, Void.class);
+        // Add players to game
+        ResponseEntity<Game> addUserResponse1 = addPlayerToGame(gameId, token1, user1);
+        ResponseEntity<Game> addUserResponse2 = addPlayerToGame(gameId, token2, user2);
 
         assertThat(addUserResponse1.getStatusCodeValue()).isEqualTo(200);
         assertThat(addUserResponse2.getStatusCodeValue()).isEqualTo(200);
@@ -112,6 +109,13 @@ public class IntegrationTest {
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse login response", e);
         }
+    }
+
+    private ResponseEntity<Game> addPlayerToGame(Long gameId, String token, User user) {
+        HttpHeaders headers = createHeaders(token);
+        headers.set("Content-Type", "application/json");
+        HttpEntity<User> addUserRequest = new HttpEntity<>(user, headers);
+        return restTemplate.postForEntity("http://localhost:" + port + "/game/" + gameId + "/addPlayer", addUserRequest, Game.class);
     }
 
     private HttpHeaders createHeaders(String token) {

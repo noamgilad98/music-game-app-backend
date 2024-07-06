@@ -1,33 +1,28 @@
 package com.example.musicgame.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 public class Game {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "deck_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "deck_id", referencedColumnName = "id")
     private Deck deck;
-
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Player> players;
 
     @Enumerated(EnumType.STRING)
     private GameState gameState;
 
-    public Game() {
-    }
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "game-players")
+    private List<Player> players;
 
-    public Game(Deck deck, List<Player> players, GameState gameState) {
-        this.deck = deck;
-        this.players = players;
-        this.gameState = gameState;
-    }
+    // Getters and setters
 
     public Long getId() {
         return id;
@@ -45,19 +40,19 @@ public class Game {
         this.deck = deck;
     }
 
-    public List<Player> getPlayers() {
-        return players;
-    }
-
-    public void setPlayers(List<Player> players) {
-        this.players = players;
-    }
-
     public GameState getGameState() {
         return gameState;
     }
 
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
     }
 }

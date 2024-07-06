@@ -1,5 +1,7 @@
 package com.example.musicgame.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 
 @Entity
@@ -18,7 +20,18 @@ public class Card {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "deck_id")
+    @JsonBackReference(value = "deck-cards")
     private Deck deck;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "player_hand_id")
+    @JsonBackReference(value = "player-hand")
+    private Player playerHand;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "player_timeline_id")
+    @JsonBackReference(value = "player-timeline")
+    private Player playerTimeline;
 
     public Card() {
     }
@@ -94,5 +107,21 @@ public class Card {
 
     public void setDeck(Deck deck) {
         this.deck = deck;
+    }
+
+    public Player getPlayerHand() {
+        return playerHand;
+    }
+
+    public void setPlayerHand(Player playerHand) {
+        this.playerHand = playerHand;
+    }
+
+    public Player getPlayerTimeline() {
+        return playerTimeline;
+    }
+
+    public void setPlayerTimeline(Player playerTimeline) {
+        this.playerTimeline = playerTimeline;
     }
 }
