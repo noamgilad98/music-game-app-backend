@@ -3,6 +3,7 @@ package com.example.musicgame.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -16,7 +17,7 @@ public class Deck {
 
     @OneToMany(mappedBy = "deck", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "deck-cards")
-    private List<Card> cards;
+    private List<Card> cards = new ArrayList<>();
 
     public Deck(List<Card> cards) {
         this.cards = cards;
@@ -53,6 +54,9 @@ public class Deck {
     }
 
     public Card drawCard() {
-        return null;
+        if (cards == null || cards.isEmpty()) {
+            return null;
+        }
+        return cards.remove(0);
     }
 }

@@ -1,8 +1,9 @@
 package com.example.musicgame.test.integration;
 
-
 import com.example.musicgame.dto.PlaceCardRequest;
 import com.example.musicgame.model.*;
+import com.example.musicgame.repository.CardRepository;
+import com.example.musicgame.repository.DeckRepository;
 import com.example.musicgame.repository.GameRepository;
 import com.example.musicgame.repository.UserRepository;
 import com.example.musicgame.service.UserService;
@@ -39,14 +40,31 @@ public class FullGameFlowTest {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    CardRepository cardRepository;
+
+    @Autowired
+    DeckRepository deckRepository;
+
     private RestTemplate restTemplate;
 
     @BeforeEach
     void setUp() {
+        // Clear all cards related to decks first to avoid constraint violation
+        cardRepository.findAll().forEach(card -> {
+            card.setDeck(null);
+            cardRepository.save(card);
+        });
+
+        // Delete all users, games, decks, and cards
         userRepository.deleteAll();
         gameRepository.deleteAll();
+        deckRepository.deleteAll();
+        cardRepository.deleteAll();
+
         this.restTemplate = new RestTemplate();
     }
+
 
     @Test
     public void testFullGameFlowForTwoPlayers() {
@@ -188,7 +206,6 @@ public class FullGameFlowTest {
         PlaceCardRequest placeCardRequest = new PlaceCardRequest(player, card, 0);
         return restTemplate.postForEntity("http://localhost:" + port + "/game/" + gameId + "/placeCard", new HttpEntity<>(placeCardRequest, headers), Game.class);
     }
-
 
     private boolean checkWinCondition(Game game) {
         // Implement your win condition check logic here

@@ -3,6 +3,7 @@ package com.example.musicgame.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,10 +26,10 @@ public class Game {
     public Game() {
     }
 
-    public Game(Deck deck, GameState gameState, List<Player> players) {
+    public Game(Deck deck, GameState gameState) {
         this.deck = deck;
         this.gameState = gameState;
-        this.players = players;
+        this.players = new ArrayList<>();
     }
 
     // Getters and setters

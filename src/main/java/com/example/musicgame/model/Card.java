@@ -11,22 +11,22 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String artist;
     private String songName;
-    private int year;
+    private String artist;
     private String previewUrl;
-    private boolean isFaceUp;
     private String spotifyCode;
+    private int year;
+    private boolean isFaceUp;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "timeline_id")
+    @JsonBackReference(value = "timeline-cards")
+    private TimeLine timeLine;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "deck_id")
     @JsonBackReference(value = "deck-cards")
     private Deck deck;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "player_timeline_id")
-    @JsonBackReference(value = "player-timeline")
-    private Player playerTimeline;
 
     public Card() {
     }
@@ -96,19 +96,19 @@ public class Card {
         isFaceUp = faceUp;
     }
 
-    public Deck getDeck() {
-        return deck;
+    public TimeLine getTimeLine() {
+        return timeLine;
+    }
+
+    public void setTimeLine(TimeLine timeLine) {
+        this.timeLine = timeLine;
     }
 
     public void setDeck(Deck deck) {
         this.deck = deck;
     }
 
-    public Player getPlayerTimeline() {
-        return playerTimeline;
-    }
-
-    public void setPlayerTimeline(Player playerTimeline) {
-        this.playerTimeline = playerTimeline;
+    public Deck getDeck() {
+        return deck;
     }
 }

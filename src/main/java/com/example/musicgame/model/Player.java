@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Player {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,24 +16,24 @@ public class Player {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id", nullable = false)
+    @JoinColumn(name = "game_id")
     @JsonBackReference(value = "game-players")
     private Game game;
 
-    @OneToMany(mappedBy = "playerTimeline", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference(value = "player-timeline")
-    private List<Card> timeline;
+    private TimeLine timeLine;
 
     public Player() {
-        this.timeline = new ArrayList<>();
     }
 
     public Player(String name, Game game) {
         this.name = name;
         this.game = game;
-        this.timeline = new ArrayList<>();
+        this.timeLine = new TimeLine(this);
     }
 
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -58,11 +58,19 @@ public class Player {
         this.game = game;
     }
 
-    public List<Card> getTimeline() {
-        return timeline;
+    public TimeLine getTimeLine() {
+        return timeLine;
     }
 
-    public void setTimeline(List<Card> timeline) {
-        this.timeline = timeline;
+    public void setTimeLine(TimeLine timeLine) {
+        this.timeLine = timeLine;
+    }
+
+    public List<Card> getTimeline() {
+        return timeLine.getCards();
+    }
+
+    public void addCardToTimeline(Card card, int position) {
+        timeLine.addCardAtPosition(card, position);
     }
 }

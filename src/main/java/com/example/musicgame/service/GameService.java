@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class GameService {
@@ -40,11 +41,10 @@ public class GameService {
     public Game createGame(String token) {
         String username = jwtUtil.getUsernameFromToken(token.substring(7)); // Remove "Bearer " prefix
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-
-        Game createdGame = new Game(deckService.createDeck(), GameState.CREATED, new ArrayList<>());
+        List<Card> cards = cardRepository.findAll(); // Or however you generate the cards
+        Deck deck = deckService.createDeck(cards); // Ensure the deck is properly initialized
+        Game createdGame = new Game(deck, GameState.CREATED);
         gameRepository.save(createdGame);
-
-
         addPlayerToGame(createdGame.getId(), user);
         return gameRepository.save(createdGame);
     }
@@ -55,8 +55,10 @@ public class GameService {
 
     public Game startGame(Long gameId) {
         Game game = getGameById(gameId);
+        List<Card> cards = cardRepository.findAll(); // Or however you generate the cards
+        Deck deck = deckService.createDeck(cards); // Ensure the deck is properly initialized
         game.setGameState(GameState.STARTED);
-        game.setDeck(deckService.createDeck());
+        game.setDeck(deck);
         return gameRepository.save(game);
     }
 
@@ -76,14 +78,22 @@ public class GameService {
     }
 
     public Card drawCard(Long gameId, Long playerId) {
-        Game game = getGameById(gameId);
-        Player player = playerRepository.findById(playerId).orElseThrow(() -> new RuntimeException("Player not found"));
-        Card drawnCard = game.getDeck().drawCard();
-        if (drawnCard == null) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new RuntimeException("Game not found"));
+
+        Player player = game.getPlayers().stream()
+                .filter(p -> p.getId().equals(playerId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Player not found"));
+
+        Optional<Card> card = Optional.ofNullable(game.getDeck().drawCard());
+        if (card.isEmpty()) {
             throw new RuntimeException("No card drawn from the deck");
         }
-        playerRepository.save(player);
-        System.out.println("Card drawn: " + drawnCard); // Log drawn card
+
+        Card drawnCard = card.get();
+        gameRepository.save(game);
+
         return drawnCard;
     }
 
@@ -98,7 +108,7 @@ public class GameService {
 
         boolean isValidPlacement = validateCardPlacement(player, card, position);
         if (isValidPlacement) {
-            player.getTimeline().add(position, card);
+            player.addCardToTimeline(card, position);
         }
 
         playerRepository.save(player);
