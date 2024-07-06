@@ -1,9 +1,10 @@
 package com.example.musicgame.service;
 
+import com.example.musicgame.model.Card;
 import com.example.musicgame.model.Deck;
+import com.example.musicgame.repository.CardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.musicgame.model.Card;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,10 +13,10 @@ import java.util.List;
 public class DeckService {
 
     @Autowired
-    private CardService cardService;
+    private CardRepository cardRepository;
 
     public Deck createDeck() {
-        List<Card> cards = cardService.getAllCards();
+        List<Card> cards = cardRepository.findAll();
         Collections.shuffle(cards);
         return new Deck(cards);
     }

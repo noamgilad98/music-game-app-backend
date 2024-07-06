@@ -1,59 +1,61 @@
 package com.example.musicgame.controller;
 
 import com.example.musicgame.model.Card;
+import com.example.musicgame.model.Game;
 import com.example.musicgame.model.Player;
 import com.example.musicgame.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/api/game")
+@RequestMapping("/game")
 public class GameController {
+
     @Autowired
     private GameService gameService;
 
-    private static final Logger logger = LoggerFactory.getLogger(GameController.class);
-
-    @PostMapping("/start-game")
-    public Map<String, Object> startGame(@RequestBody Player player) {
-        logger.info("Starting game for player: {}", player.getName());
-        Map<String, Object> response = new HashMap<>();
-        response.put("player", gameService.savePlayer(player));
-        response.put("card", gameService.startGame(player));
-        return response;
+    @PostMapping("/create")
+    public ResponseEntity<Game> createGame(@RequestBody Game game) {
+        Game createdGame = gameService.createGame(game);
+        return ResponseEntity.ok(createdGame);
     }
 
-    @GetMapping("/get-card")
-    public Card getCard(@RequestParam Long playerId) {
-        return null;
+    @GetMapping("/{gameId}")
+    public ResponseEntity<Game> getGame(@PathVariable Long gameId) {
+        Game game = gameService.getGameById(gameId);
+        return ResponseEntity.ok(game);
     }
 
-    @PostMapping("/submit-card")
-    public boolean submitCard(@RequestParam Long playerId, @RequestBody Card card) {
-        return gameService.submitCard(playerId, card);
+    @PostMapping("/{gameId}/start")
+    public ResponseEntity<Game> startGame(@PathVariable Long gameId) {
+        Game startedGame = gameService.startGame(gameId);
+        return ResponseEntity.ok(startedGame);
     }
 
-    @PostMapping("/submit-timeline")
-    public boolean submitTimeline(@RequestParam Long playerId, @RequestBody List<Card> timeline) {
-        logger.info("Submitting timeline for player: {}", playerId);
-        return gameService.submitTimeline(playerId, timeline);
+    @PostMapping("/{gameId}/end")
+    public ResponseEntity<Game> endGame(@PathVariable Long gameId) {
+        Game endedGame = gameService.endGame(gameId);
+        return ResponseEntity.ok(endedGame);
     }
 
-    @GetMapping("/validate-timeline")
-    public boolean validateTimeline(@RequestParam Long playerId) {
-        logger.info("Validating timeline for player: {}", playerId);
-        return gameService.validateTimeline(playerId);
+    @PostMapping("/{gameId}/drawCard")
+    public ResponseEntity<Card> drawCard(@PathVariable Long gameId, @RequestBody Player player) {
+        Card drawnCard = gameService.drawCard(gameId, player.getId());
+        return ResponseEntity.ok(drawnCard);
     }
 
-    @PostMapping("/submit-and-validate")
-    public Map<String, Object> submitAndValidate(@RequestParam Long playerId, @RequestBody Card card) {
-        logger.info("Submitting and validating card for player: {}", playerId);
-        return gameService.submitAndValidate(playerId, card);
+    @PostMapping("/{gameId}/placeCard")
+    public ResponseEntity<Game> placeCard(@PathVariable Long gameId, @RequestBody Player player, @RequestBody Card card, @RequestParam int position) {
+        Game updatedGame = gameService.placeCard(gameId, player.getId(), card.getId(), position);
+        return ResponseEntity.ok(updatedGame);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Game>> getAllGames() {
+        List<Game> games = gameService.getAllGames();
+        return ResponseEntity.ok(games);
     }
 }

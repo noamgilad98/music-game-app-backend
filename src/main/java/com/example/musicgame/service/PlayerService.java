@@ -1,11 +1,11 @@
 package com.example.musicgame.service;
 
+import com.example.musicgame.model.Game;
 import com.example.musicgame.model.Player;
+import com.example.musicgame.repository.GameRepository;
 import com.example.musicgame.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class PlayerService {
@@ -13,15 +13,22 @@ public class PlayerService {
     @Autowired
     private PlayerRepository playerRepository;
 
-    public Player savePlayer(Player player) {
+    @Autowired
+    private GameRepository gameRepository;
+
+    public Player joinGame(Long gameId, Player player) {
+        Game game = gameRepository.findById(gameId).orElseThrow(() -> new RuntimeException("Game not found"));
+        player.setGame(game);
         return playerRepository.save(player);
     }
 
-    public Optional<Player> getPlayerById(Long id) {
-        return playerRepository.findById(id);
+    public Player getPlayerById(Long playerId) {
+        return playerRepository.findById(playerId).orElseThrow(() -> new RuntimeException("Player not found"));
     }
 
-    public void deletePlayer(Long id) {
-        playerRepository.deleteById(id);
+    public void leaveGame(Long playerId) {
+        Player player = playerRepository.findById(playerId).orElseThrow(() -> new RuntimeException("Player not found"));
+        player.setGame(null);
+        playerRepository.save(player);
     }
 }

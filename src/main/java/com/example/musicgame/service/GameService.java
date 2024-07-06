@@ -1,113 +1,96 @@
 package com.example.musicgame.service;
 
-import com.example.musicgame.model.Card;
-import com.example.musicgame.model.Game;
-import com.example.musicgame.model.GameState;
-import com.example.musicgame.model.Player;
-import com.example.musicgame.repository.CardRepository;
+import com.example.musicgame.model.*;
 import com.example.musicgame.repository.GameRepository;
 import com.example.musicgame.repository.PlayerRepository;
+import com.example.musicgame.repository.CardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
 
 @Service
 public class GameService {
-    @Autowired
-    private CardRepository cardRepository;
-    @Autowired
-    private PlayerRepository playerRepository;
+
     @Autowired
     private GameRepository gameRepository;
+
+    @Autowired
+    private PlayerRepository playerRepository;
+
+    @Autowired
+    private CardRepository cardRepository;
+
     @Autowired
     private DeckService deckService;
 
-    public Player savePlayer(Player player) {
-        return playerRepository.save(player);
+    public Game createGame(Game game) {
+        return gameRepository.save(game);
     }
 
-    public Card startGame(Player player) {
+    public Game getGameById(Long gameId) {
+        return gameRepository.findById(gameId).orElseThrow(() -> new RuntimeException("Game not found"));
+    }
 
-        Game game = new Game(deckService.createDeck(), GameState.NOT_STARTED);
+    public Game startGame(Long gameId) {
+        Game game = getGameById(gameId);
+        game.setGameState(GameState.STARTED);
+        game.setDeck(deckService.createDeck());
+        return gameRepository.save(game);
+    }
+
+    public Game endGame(Long gameId) {
+        Game game = getGameById(gameId);
+        game.setGameState(GameState.ENDED);
+        return gameRepository.save(game);
+    }
+
+    public Card drawCard(Long gameId, Long playerId) {
+        Game game = getGameById(gameId);
+        Player player = playerRepository.findById(playerId).orElseThrow(() -> new RuntimeException("Player not found"));
+        Card drawnCard = game.getDeck().drawCard();
+        player.addCardToHand(drawnCard);
         playerRepository.save(player);
-        game.setGameState(GameState.IN_PROGRESS);
-        game = gameRepository.save(game);
-        return null;
+        return drawnCard;
     }
 
-    public Card getCard(Long playerId, Long gameId) {
-        Optional<Player> playerOpt = playerRepository.findById(playerId);
-        if (playerOpt.isPresent()) {
-            Player player = playerOpt.get();
-            Game game = gameRepository.findById(gameId).orElse(null);
-            if (game == null) {
-                throw new IllegalArgumentException("Invalid game ID");
-            }
-            game.pullCardFromDeck(playerId);
+    public Game placeCard(Long gameId, Long playerId, Long cardId, int position) {
+        Game game = getGameById(gameId);
+        Player player = playerRepository.findById(playerId).orElseThrow(() -> new RuntimeException("Player not found"));
+        Card card = cardRepository.findById(cardId).orElseThrow(() -> new RuntimeException("Card not found"));
+
+        boolean isValidPlacement = validateCardPlacement(player, card, position);
+        if (isValidPlacement) {
+            player.getTimeline().add(position, card);
         } else {
-            throw new IllegalArgumentException("Invalid player ID");
+            player.getHand().remove(card);
         }
-        return null;
+
+        playerRepository.save(player);
+        return game;
     }
 
-    public boolean submitCard(Long playerId, Card card) {
-        return false;
-    }
-
-    public boolean submitTimeline(Long playerId, List<Card> timeline) {
-        Optional<Player> playerOpt = playerRepository.findById(playerId);
-        if (playerOpt.isPresent()) {
-            Player player = playerOpt.get();
-            player.setTimeline(timeline);
-            playerRepository.save(player);
-            return true;
-        } else {
-            throw new IllegalArgumentException("Invalid player ID");
+    private boolean validateCardPlacement(Player player, Card card, int position) {
+        List<Card> timeline = player.getTimeline();
+        if (position < 0 || position > timeline.size()) {
+            return false;
         }
-    }
 
-    public boolean validateTimeline(Long playerId) {
-        Optional<Player> playerOpt = playerRepository.findById(playerId);
-        if (playerOpt.isPresent()) {
-            Player player = playerOpt.get();
-            List<Card> timeline = player.getTimeline();
-            return isTimelineValid(timeline);
-        } else {
-            throw new IllegalArgumentException("Invalid player ID");
-        }
-    }
+        Card previousCard = (position > 0) ? timeline.get(position - 1) : null;
+        Card nextCard = (position < timeline.size()) ? timeline.get(position) : null;
 
-    private boolean isTimelineValid(List<Card> timeline) {
-        for (int i = 1; i < timeline.size(); i++) {
-            if (timeline.get(i).getYear() < timeline.get(i - 1).getYear()) {
-                return false;
-            }
+        if (previousCard != null && previousCard.getYear() > card.getYear()) {
+            return false;
         }
+
+        if (nextCard != null && nextCard.getYear() < card.getYear()) {
+            return false;
+        }
+
         return true;
     }
 
-    public Map<String, Object> submitAndValidate(Long playerId, Card card) {
-        Map<String, Object> response = new HashMap<>();
-        boolean isValid = false;
-        boolean hasWon = false;
-
-        Optional<Player> playerOpt = playerRepository.findById(playerId);
-        if (playerOpt.isPresent()) {
-            Player player = playerOpt.get();
-            List<Card> timeline = player.getTimeline();
-            timeline.add(card);
-            player.setTimeline(timeline);
-            playerRepository.save(player);
-
-            isValid = isTimelineValid(timeline);
-            hasWon = timeline.size() >= 10;
-        } else {
-            throw new IllegalArgumentException("Invalid player ID");
-        }
-
-        response.put("isValid", isValid);
-        response.put("hasWon", hasWon);
-        return response;
+    public List<Game> getAllGames() {
+        return gameRepository.findAll();
     }
 }

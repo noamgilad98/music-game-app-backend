@@ -45,16 +45,15 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User user) {
-        try {
-            UserDetails userDetails = userService.loadUserByUsername(user.getUsername());
-            if (bCryptPasswordEncoder.matches(user.getPassword(), userDetails.getPassword())) {
-                String token = jwtUtil.generateToken(user.getUsername());
-                return ResponseEntity.ok(Map.of("token", token));
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-            }
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        UserDetails userDetails = userService.loadUserByUsername(user.getUsername());
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+        }
+        if (bCryptPasswordEncoder.matches(user.getPassword(), userDetails.getPassword())) {
+            String token = jwtUtil.generateToken(user.getUsername());
+            return ResponseEntity.ok(Map.of("token", token));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
     }
 

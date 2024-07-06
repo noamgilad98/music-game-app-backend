@@ -1,52 +1,40 @@
 package com.example.musicgame.model;
-import com.example.musicgame.model.Card;
-import com.example.musicgame.model.GameState;
-import com.example.musicgame.model.Player;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 public class Game {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "deck_id")
+    private Deck deck;
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Player> players;
 
     @Enumerated(EnumType.STRING)
     private GameState gameState;
 
-    @OneToOne
-    private Deck deck;
-
-    private Long currentTurnPlayerId;
-
-
-    // Default constructor
     public Game() {
     }
 
-    // Constructor with parameters
-    public Game(Deck deck, GameState gameState) {
+    public Game(Deck deck, List<Player> players, GameState gameState) {
         this.deck = deck;
+        this.players = players;
         this.gameState = gameState;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public GameState getGameState() {
-        return gameState;
-    }
-
-    public void setGameState(GameState gameState) {
-        this.gameState = gameState;
     }
 
     public Deck getDeck() {
@@ -57,12 +45,19 @@ public class Game {
         this.deck = deck;
     }
 
+    public List<Player> getPlayers() {
+        return players;
+    }
 
-    public Card pullCardFromDeck(Long playerId) {
-        if (playerId.equals(currentTurnPlayerId)) {
-            return deck.pullCard();
-        } else {
-            throw new IllegalArgumentException("It is not your turn");
-        }
+    public void setPlayers(List<Player> players) {
+        this.players = players;
+    }
+
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
     }
 }

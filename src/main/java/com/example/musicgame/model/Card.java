@@ -15,6 +15,10 @@ public class Card {
     private boolean isFaceUp;
     private String spotifyCode;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deck_id")
+    private Deck deck;
+
     public Card() {
     }
 
@@ -81,5 +85,13 @@ public class Card {
 
     public void setFaceUp(boolean faceUp) {
         isFaceUp = faceUp;
+    }
+
+    public Deck getDeck() {
+        return deck;
+    }
+
+    public void setDeck(Deck deck) {
+        this.deck = deck;
     }
 }
