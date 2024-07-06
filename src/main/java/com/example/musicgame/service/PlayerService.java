@@ -31,4 +31,11 @@ public class PlayerService {
         player.setGame(null);
         playerRepository.save(player);
     }
+
+    public Player createPlayer(String name, Game game) {
+        Player player = new Player(name, game);
+        player.setName(name);
+
+        return playerRepository.save(player);
+    }
 }

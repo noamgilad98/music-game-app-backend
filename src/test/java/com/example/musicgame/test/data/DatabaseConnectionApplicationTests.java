@@ -1,4 +1,4 @@
-package com.example.musicgame.test;
+package com.example.musicgame.test.data;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test") // Ensure it uses the test profile if you have different profiles
-public class TestDatabaseConnectionApplicationTests {
+public class DatabaseConnectionApplicationTests {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

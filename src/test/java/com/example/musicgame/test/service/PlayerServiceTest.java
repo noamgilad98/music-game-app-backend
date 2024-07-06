@@ -1,4 +1,4 @@
-package com.example.musicgame.test;
+package com.example.musicgame.test.service;
 
 import com.example.musicgame.model.Game;
 import com.example.musicgame.model.Player;

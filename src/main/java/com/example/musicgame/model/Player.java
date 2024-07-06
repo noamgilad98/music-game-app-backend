@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,18 +25,13 @@ public class Player {
     private List<Card> timeline;
 
     public Player() {
-    }
-
-    public Player(Long id, String name, Game game, List<Card> timeline) {
-        this.id = id;
-        this.name = name;
-        this.game = game;
-        this.timeline = timeline;
+        this.timeline = new ArrayList<>();
     }
 
     public Player(String name, Game game) {
         this.name = name;
         this.game = game;
+        this.timeline = new ArrayList<>();
     }
 
     public Long getId() {

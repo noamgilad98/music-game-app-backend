@@ -1,4 +1,4 @@
-package com.example.musicgame.test;
+package com.example.musicgame.test.controller;
 
 import com.example.musicgame.controller.UserController;
 import com.example.musicgame.model.User;

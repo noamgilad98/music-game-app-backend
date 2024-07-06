@@ -1,4 +1,4 @@
-package com.example.musicgame.test;
+package com.example.musicgame.test.service;
 
 import com.example.musicgame.model.Card;
 import com.example.musicgame.repository.CardRepository;

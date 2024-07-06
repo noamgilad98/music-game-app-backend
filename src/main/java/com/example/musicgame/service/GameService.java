@@ -5,9 +5,11 @@ import com.example.musicgame.repository.GameRepository;
 import com.example.musicgame.repository.PlayerRepository;
 import com.example.musicgame.repository.CardRepository;
 import com.example.musicgame.repository.UserRepository;
+import com.example.musicgame.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,8 +31,21 @@ public class GameService {
     @Autowired
     private DeckService deckService;
 
-    public Game createGame(Game game) {
-        Game createdGame = new Game(deckService.createDeck(), GameState.CREATED,game.getPlayers());//TODO
+    @Autowired
+    private PlayerService playerService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    public Game createGame(String token) {
+        String username = jwtUtil.getUsernameFromToken(token.substring(7)); // Remove "Bearer " prefix
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+
+        Game createdGame = new Game(deckService.createDeck(), GameState.CREATED, new ArrayList<>());
+        gameRepository.save(createdGame);
+
+
+        addPlayerToGame(createdGame.getId(), user);
         return gameRepository.save(createdGame);
     }
 
@@ -47,10 +62,9 @@ public class GameService {
 
     public Game addPlayerToGame(Long gameId, User user) {
         Game game = getGameById(gameId);
-        Player player = new Player();
-        player.setName(user.getUsername());
+        Player player = playerService.createPlayer(user.getUsername(), game); // Create player
         player.setGame(game);
-        playerRepository.save(player);  // Save the player to the repository
+        playerRepository.save(player);
         game.getPlayers().add(player);
         return gameRepository.save(game);
     }
@@ -73,7 +87,6 @@ public class GameService {
         return drawnCard;
     }
 
-
     public Game placeCard(Long gameId, Long playerId, Long cardId, int position) {
         Objects.requireNonNull(gameId, "gameId must not be null");
         Objects.requireNonNull(playerId, "playerId must not be null");
@@ -91,7 +104,6 @@ public class GameService {
         playerRepository.save(player);
         return game;
     }
-
 
     private boolean validateCardPlacement(Player player, Card card, int position) {
         List<Card> timeline = player.getTimeline();

@@ -1,4 +1,4 @@
-package com.example.musicgame.test;
+package com.example.musicgame.test.integration;
 
 
 import com.example.musicgame.dto.PlaceCardRequest;
@@ -74,7 +74,8 @@ public class FullGameFlowTest {
         System.out.println("Token2: " + token2);
 
         // Start a game
-        HttpEntity<Game> gameRequest = new HttpEntity<>(createHeaders(token1));
+        HttpHeaders headers = createHeaders(token1);
+        HttpEntity<Void> gameRequest = new HttpEntity<>(headers);
         ResponseEntity<Game> gameResponse = restTemplate.postForEntity("http://localhost:" + port + "/game/create", gameRequest, Game.class);
 
         assertThat(gameResponse.getStatusCodeValue()).isEqualTo(200);
@@ -82,11 +83,9 @@ public class FullGameFlowTest {
 
         Long gameId = gameResponse.getBody().getId();
 
-        // Add players to game
-        ResponseEntity<Game> addUserResponse1 = addPlayerToGame(gameId, token1, user1);
+        // Add player 2 to game
         ResponseEntity<Game> addUserResponse2 = addPlayerToGame(gameId, token2, user2);
 
-        assertThat(addUserResponse1.getStatusCodeValue()).isEqualTo(200);
         assertThat(addUserResponse2.getStatusCodeValue()).isEqualTo(200);
 
         // Start the game
@@ -111,7 +110,6 @@ public class FullGameFlowTest {
 
             ResponseEntity<Game> placeCardResponse1 = placeCard(gameId, token1, user1, card);
             assertThat(placeCardResponse1.getStatusCodeValue()).isEqualTo(200);
-
 
             // Check for win
             Game currentGame = placeCardResponse1.getBody();

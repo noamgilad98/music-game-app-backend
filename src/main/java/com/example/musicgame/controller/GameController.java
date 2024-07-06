@@ -20,8 +20,8 @@ public class GameController {
     private GameService gameService;
 
     @PostMapping("/create")
-    public ResponseEntity<Game> createGame(@RequestBody Game game) {
-        Game createdGame = gameService.createGame(game);
+    public ResponseEntity<Game> createGame(@RequestHeader("Authorization") String token) {
+        Game createdGame = gameService.createGame(token);
         return ResponseEntity.ok(createdGame);
     }
 
@@ -57,7 +57,6 @@ public class GameController {
         return ResponseEntity.ok(drawnCard);
     }
 
-
     @PostMapping("/{gameId}/placeCard")
     public ResponseEntity<Game> placeCard(@PathVariable Long gameId, @RequestBody PlaceCardRequest request) {
         if (request.getCard() == null) {
@@ -67,8 +66,6 @@ public class GameController {
         Game updatedGame = gameService.placeCard(gameId, request.getPlayer().getId(), request.getCard().getId(), request.getPosition());
         return ResponseEntity.ok(updatedGame);
     }
-
-
 
     @GetMapping("/all")
     public ResponseEntity<List<Game>> getAllGames() {

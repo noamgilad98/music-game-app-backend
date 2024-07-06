@@ -1,9 +1,10 @@
-package com.example.musicgame.test;
+package com.example.musicgame.test.controller;
 
 import com.example.musicgame.controller.GameController;
 import com.example.musicgame.model.Game;
 import com.example.musicgame.model.GameState;
 import com.example.musicgame.service.GameService;
+import com.example.musicgame.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,6 +26,9 @@ public class GameControllerTest {
     @Mock
     private GameService gameService;
 
+    @Mock
+    private JwtUtil jwtUtil;
+
     @InjectMocks
     private GameController gameController;
 
@@ -36,10 +40,15 @@ public class GameControllerTest {
 
     @Test
     public void testCreateGame_Success() throws Exception {
+        String token = "Bearer mock-token";
+        String username = "user1";
         Game game = new Game();
-        when(gameService.createGame(game)).thenReturn(game);
+
+        when(jwtUtil.getUsernameFromToken("mock-token")).thenReturn(username);
+        when(gameService.createGame(token)).thenReturn(game);
 
         mockMvc.perform(post("/game/create")
+                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isOk());
