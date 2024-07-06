@@ -67,6 +67,8 @@ public class Game {
     }
 
     public void addPlayer(Player player) {
+        if (this.players.contains(player))
+            throw new RuntimeException("Player already in game");
         this.players.add(player);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DeckService {
@@ -18,8 +19,24 @@ public class DeckService {
     @Autowired
     private CardRepository cardRepository;
 
-    public Deck createDeck(List<Card> cards) {
-        Deck deck = new Deck(cards);
-        return deckRepository.save(deck); // Save the deck along with the cards
+    @Autowired
+    private CardService cardService;
+
+    public Deck createDeck() {
+        List<Card> cards = cardRepository.findAll();
+        List<Card> newCards = cards.stream()
+                .map(card -> {
+                    Card newCard = new Card();
+                    newCard.setSongName(card.getSongName());
+                    newCard.setArtist(card.getArtist());
+                    newCard.setPreviewUrl(card.getPreviewUrl());
+                    newCard.setSpotifyCode(card.getSpotifyCode());
+                    newCard.setYear(card.getYear());
+                    return cardRepository.save(newCard);
+                })
+                .collect(Collectors.toList());
+        Deck deck = new Deck(newCards);
+        return deckRepository.save(deck);
     }
+
 }

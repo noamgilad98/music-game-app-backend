@@ -41,8 +41,7 @@ public class GameService {
     public Game createGame(String token) {
         String username = jwtUtil.getUsernameFromToken(token.substring(7)); // Remove "Bearer " prefix
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-        List<Card> cards = cardRepository.findAll(); // Or however you generate the cards
-        Deck deck = deckService.createDeck(cards); // Ensure the deck is properly initialized
+        Deck deck = deckService.createDeck(); // Ensure the deck is properly initialized
         Game createdGame = new Game(deck, GameState.CREATED);
         gameRepository.save(createdGame);
         addPlayerToGame(createdGame.getId(), user);
@@ -55,8 +54,7 @@ public class GameService {
 
     public Game startGame(Long gameId) {
         Game game = getGameById(gameId);
-        List<Card> cards = cardRepository.findAll(); // Or however you generate the cards
-        Deck deck = deckService.createDeck(cards); // Ensure the deck is properly initialized
+        Deck deck = deckService.createDeck();
         game.setGameState(GameState.STARTED);
         game.setDeck(deck);
         return gameRepository.save(game);
@@ -64,9 +62,9 @@ public class GameService {
 
     public Game addPlayerToGame(Long gameId, User user) {
         Game game = getGameById(gameId);
-        Player player = playerService.createPlayer(user.getUsername(), game); // Create player
+        Player player = playerService.createPlayer(user.getUsername()); // Create player
         playerRepository.save(player);
-        game.getPlayers().add(player);
+        game.addPlayer(player);
         return gameRepository.save(game);
     }
 

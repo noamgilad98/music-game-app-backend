@@ -84,11 +84,9 @@ public class IntegrationTest {
 
         Long gameId = gameResponse.getBody().getId();
 
-        // Add players to game
-        ResponseEntity<Game> addUserResponse1 = addPlayerToGame(gameId, token1, user1);
+
         ResponseEntity<Game> addUserResponse2 = addPlayerToGame(gameId, token2, user2);
 
-        assertThat(addUserResponse1.getStatusCodeValue()).isEqualTo(200);
         assertThat(addUserResponse2.getStatusCodeValue()).isEqualTo(200);
 
         // Verify game status

@@ -30,7 +30,7 @@ public class PlayerService {
         playerRepository.save(player);
     }
 
-    public Player createPlayer(String name, Game game) {
+    public Player createPlayer(String name) {
         Player player = new Player(name);
         player.setName(name);
 
