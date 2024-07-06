@@ -1,8 +1,5 @@
 package com.example.musicgame.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -15,22 +12,16 @@ public class Player {
 
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id")
-    @JsonBackReference(value = "game-players")
-    private Game game;
-
-    @OneToOne(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "player-timeline")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "timeline_id")
     private TimeLine timeLine;
 
     public Player() {
     }
 
-    public Player(String name, Game game) {
+    public Player(String name) {
         this.name = name;
-        this.game = game;
-        this.timeLine = new TimeLine(this);
+        this.timeLine = new TimeLine();
     }
 
     // Getters and setters
@@ -48,14 +39,6 @@ public class Player {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Game getGame() {
-        return game;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
     }
 
     public TimeLine getTimeLine() {

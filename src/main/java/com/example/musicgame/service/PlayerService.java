@@ -18,7 +18,6 @@ public class PlayerService {
 
     public Player joinGame(Long gameId, Player player) {
         Game game = gameRepository.findById(gameId).orElseThrow(() -> new RuntimeException("Game not found"));
-        player.setGame(game);
         return playerRepository.save(player);
     }
 
@@ -28,12 +27,11 @@ public class PlayerService {
 
     public void leaveGame(Long playerId) {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new RuntimeException("Player not found"));
-        player.setGame(null);
         playerRepository.save(player);
     }
 
     public Player createPlayer(String name, Game game) {
-        Player player = new Player(name, game);
+        Player player = new Player(name);
         player.setName(name);
 
         return playerRepository.save(player);

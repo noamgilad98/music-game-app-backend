@@ -52,7 +52,6 @@ public class FullGameFlowTest {
     void setUp() {
         // Clear all cards related to decks first to avoid constraint violation
         cardRepository.findAll().forEach(card -> {
-            card.setDeck(null);
             cardRepository.save(card);
         });
 

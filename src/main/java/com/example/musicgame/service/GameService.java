@@ -65,7 +65,6 @@ public class GameService {
     public Game addPlayerToGame(Long gameId, User user) {
         Game game = getGameById(gameId);
         Player player = playerService.createPlayer(user.getUsername(), game); // Create player
-        player.setGame(game);
         playerRepository.save(player);
         game.getPlayers().add(player);
         return gameRepository.save(game);
