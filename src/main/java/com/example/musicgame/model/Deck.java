@@ -22,6 +22,10 @@ public class Deck {
         this.cards = cards;
     }
 
+    public Deck() {
+
+    }
+
     // other fields, getters, and setters
 
     public Long getId() {

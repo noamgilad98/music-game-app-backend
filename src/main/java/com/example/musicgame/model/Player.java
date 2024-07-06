@@ -19,15 +19,24 @@ public class Player {
     @JsonBackReference(value = "game-players")
     private Game game;
 
-    @OneToMany(mappedBy = "playerHand", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "player-hand")
-    private List<Card> hand;
-
     @OneToMany(mappedBy = "playerTimeline", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "player-timeline")
     private List<Card> timeline;
 
-    // other fields, getters, and setters
+    public Player() {
+    }
+
+    public Player(Long id, String name, Game game, List<Card> timeline) {
+        this.id = id;
+        this.name = name;
+        this.game = game;
+        this.timeline = timeline;
+    }
+
+    public Player(String name, Game game) {
+        this.name = name;
+        this.game = game;
+    }
 
     public Long getId() {
         return id;
@@ -51,14 +60,6 @@ public class Player {
 
     public void setGame(Game game) {
         this.game = game;
-    }
-
-    public List<Card> getHand() {
-        return hand;
-    }
-
-    public void setHand(List<Card> hand) {
-        this.hand = hand;
     }
 
     public List<Card> getTimeline() {

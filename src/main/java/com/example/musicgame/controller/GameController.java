@@ -1,5 +1,6 @@
 package com.example.musicgame.controller;
 
+import com.example.musicgame.dto.PlaceCardRequest;
 import com.example.musicgame.model.Card;
 import com.example.musicgame.model.Game;
 import com.example.musicgame.model.Player;
@@ -55,10 +56,11 @@ public class GameController {
     }
 
     @PostMapping("/{gameId}/placeCard")
-    public ResponseEntity<Game> placeCard(@PathVariable Long gameId, @RequestBody Player player, @RequestBody Card card, @RequestParam int position) {
-        Game updatedGame = gameService.placeCard(gameId, player.getId(), card.getId(), position);
+    public ResponseEntity<Game> placeCard(@PathVariable Long gameId, @RequestBody PlaceCardRequest request) {
+        Game updatedGame = gameService.placeCard(gameId, request.getPlayer().getId(), request.getCard().getId(), request.getPosition());
         return ResponseEntity.ok(updatedGame);
     }
+
 
     @GetMapping("/all")
     public ResponseEntity<List<Game>> getAllGames() {

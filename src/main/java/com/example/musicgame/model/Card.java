@@ -24,11 +24,6 @@ public class Card {
     private Deck deck;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "player_hand_id")
-    @JsonBackReference(value = "player-hand")
-    private Player playerHand;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "player_timeline_id")
     @JsonBackReference(value = "player-timeline")
     private Player playerTimeline;
@@ -107,14 +102,6 @@ public class Card {
 
     public void setDeck(Deck deck) {
         this.deck = deck;
-    }
-
-    public Player getPlayerHand() {
-        return playerHand;
-    }
-
-    public void setPlayerHand(Player playerHand) {
-        this.playerHand = playerHand;
     }
 
     public Player getPlayerTimeline() {

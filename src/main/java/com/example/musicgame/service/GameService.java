@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class GameService {
@@ -69,6 +70,10 @@ public class GameService {
     }
 
     public Game placeCard(Long gameId, Long playerId, Long cardId, int position) {
+        Objects.requireNonNull(gameId, "gameId must not be null");
+        Objects.requireNonNull(playerId, "playerId must not be null");
+        Objects.requireNonNull(cardId, "cardId must not be null");
+
         Game game = getGameById(gameId);
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new RuntimeException("Player not found"));
         Card card = cardRepository.findById(cardId).orElseThrow(() -> new RuntimeException("Card not found"));
@@ -76,13 +81,12 @@ public class GameService {
         boolean isValidPlacement = validateCardPlacement(player, card, position);
         if (isValidPlacement) {
             player.getTimeline().add(position, card);
-        } else {
-            player.getHand().remove(card);
         }
 
         playerRepository.save(player);
         return game;
     }
+
 
     private boolean validateCardPlacement(Player player, Card card, int position) {
         List<Card> timeline = player.getTimeline();
