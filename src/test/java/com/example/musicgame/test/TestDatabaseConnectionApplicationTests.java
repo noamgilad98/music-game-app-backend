@@ -34,7 +34,7 @@ public class TestDatabaseConnectionApplicationTests {
         assertThat(jdbcTemplate).isNotNull();
         assertThat(dbUrl).isEqualTo("jdbc:postgresql://raja.db.elephantsql.com/xbkikoqh");
         assertThat(dbUser).isEqualTo("xbkikoqh");
-        assertThat(dbPassword).isEqualTo("4K1yrDXi19zjgSm0QPrrwwKfiXq9N7nK");
+        assertThat(dbPassword).isEqualTo("k0yoopLgqsy9LEeZwRFq05zEA6LmtOzm");
 
         Integer result = jdbcTemplate.queryForObject("SELECT 1", Integer.class);
         assertThat(result).isEqualTo(1);

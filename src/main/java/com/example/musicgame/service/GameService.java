@@ -30,7 +30,8 @@ public class GameService {
     private DeckService deckService;
 
     public Game createGame(Game game) {
-        return gameRepository.save(game);
+        Game createdGame = new Game(deckService.createDeck(), GameState.CREATED,game.getPlayers());//TODO
+        return gameRepository.save(createdGame);
     }
 
     public Game getGameById(Long gameId) {
@@ -64,10 +65,14 @@ public class GameService {
         Game game = getGameById(gameId);
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new RuntimeException("Player not found"));
         Card drawnCard = game.getDeck().drawCard();
-        //player.addCardToHand(drawnCard);
+        if (drawnCard == null) {
+            throw new RuntimeException("No card drawn from the deck");
+        }
         playerRepository.save(player);
+        System.out.println("Card drawn: " + drawnCard); // Log drawn card
         return drawnCard;
     }
+
 
     public Game placeCard(Long gameId, Long playerId, Long cardId, int position) {
         Objects.requireNonNull(gameId, "gameId must not be null");

@@ -51,15 +51,23 @@ public class GameController {
 
     @PostMapping("/{gameId}/drawCard")
     public ResponseEntity<Card> drawCard(@PathVariable Long gameId, @RequestBody Player player) {
+        System.out.println("DrawCard request received for gameId: " + gameId + " and player: " + player); // Log request
         Card drawnCard = gameService.drawCard(gameId, player.getId());
+        System.out.println("DrawCard response: " + drawnCard); // Log response
         return ResponseEntity.ok(drawnCard);
     }
 
+
     @PostMapping("/{gameId}/placeCard")
     public ResponseEntity<Game> placeCard(@PathVariable Long gameId, @RequestBody PlaceCardRequest request) {
+        if (request.getCard() == null) {
+            throw new IllegalArgumentException("Card cannot be null");
+        }
+        System.out.println("PlaceCardRequest: " + request); // Log request
         Game updatedGame = gameService.placeCard(gameId, request.getPlayer().getId(), request.getCard().getId(), request.getPosition());
         return ResponseEntity.ok(updatedGame);
     }
+
 
 
     @GetMapping("/all")

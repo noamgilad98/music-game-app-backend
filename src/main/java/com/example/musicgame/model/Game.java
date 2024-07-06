@@ -22,6 +22,15 @@ public class Game {
     @JsonManagedReference(value = "game-players")
     private List<Player> players;
 
+    public Game() {
+    }
+
+    public Game(Deck deck, GameState gameState, List<Player> players) {
+        this.deck = deck;
+        this.gameState = gameState;
+        this.players = players;
+    }
+
     // Getters and setters
 
     public Long getId() {
