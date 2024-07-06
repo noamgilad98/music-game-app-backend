@@ -4,6 +4,7 @@ import com.example.musicgame.model.*;
 import com.example.musicgame.repository.GameRepository;
 import com.example.musicgame.repository.PlayerRepository;
 import com.example.musicgame.repository.CardRepository;
+import com.example.musicgame.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,9 @@ public class GameService {
     private CardRepository cardRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private DeckService deckService;
 
     public Game createGame(Game game) {
@@ -36,6 +40,14 @@ public class GameService {
         Game game = getGameById(gameId);
         game.setGameState(GameState.STARTED);
         game.setDeck(deckService.createDeck());
+        return gameRepository.save(game);
+    }
+
+    public Game addPlayerToGame(Long gameId, User user) {
+        Game game = getGameById(gameId);
+        User existingUser = userRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        game.getPlayers().add(existingUser);
         return gameRepository.save(game);
     }
 

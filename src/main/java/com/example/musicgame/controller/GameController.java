@@ -35,6 +35,12 @@ public class GameController {
         return ResponseEntity.ok(startedGame);
     }
 
+    @PostMapping("/{gameId}/addPlayer")
+    public ResponseEntity<Game> addPlayerToGame(@PathVariable Long gameId, @RequestBody User user) {
+        Game updatedGame = gameService.addPlayerToGame(gameId, user);
+        return ResponseEntity.ok(updatedGame);
+    }
+
     @PostMapping("/{gameId}/end")
     public ResponseEntity<Game> endGame(@PathVariable Long gameId) {
         Game endedGame = gameService.endGame(gameId);
