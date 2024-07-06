@@ -13,10 +13,6 @@ public class Player {
 
     private String name;
 
-    @OneToOne(mappedBy = "player")
-    @JsonBackReference
-    private Game game;
-
     @OneToMany
     private List<Card> timeline = new ArrayList<>();
 
@@ -44,14 +40,6 @@ public class Player {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Game getGame() {
-        return game;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
     }
 
     public List<Card> getTimeline() {

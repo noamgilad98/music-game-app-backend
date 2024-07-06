@@ -31,7 +31,7 @@ public class GameController {
 
     @GetMapping("/get-card")
     public Card getCard(@RequestParam Long playerId) {
-        return gameService.getCard(playerId);
+        return null;
     }
 
     @PostMapping("/submit-card")

@@ -12,30 +12,23 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "player_id")
-    @JsonManagedReference
-    private Player player;
 
     @Enumerated(EnumType.STRING)
     private GameState gameState;
 
-    @ManyToMany
-    @JoinTable(
-            name = "game_cards",
-            joinColumns = @JoinColumn(name = "game_id"),
-            inverseJoinColumns = @JoinColumn(name = "cards_id")
-    )
-    private List<Card> cards;
+    @OneToOne
+    private Deck deck;
+
+    private Long currentTurnPlayerId;
+
 
     // Default constructor
     public Game() {
     }
 
     // Constructor with parameters
-    public Game(Player player, List<Card> cards, GameState gameState) {
-        this.player = player;
-        this.cards = cards;
+    public Game(Deck deck, GameState gameState) {
+        this.deck = deck;
         this.gameState = gameState;
     }
 
@@ -48,14 +41,6 @@ public class Game {
         this.id = id;
     }
 
-    public Player getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-
     public GameState getGameState() {
         return gameState;
     }
@@ -64,11 +49,20 @@ public class Game {
         this.gameState = gameState;
     }
 
-    public List<Card> getCards() {
-        return cards;
+    public Deck getDeck() {
+        return deck;
     }
 
-    public void setCards(List<Card> cards) {
-        this.cards = cards;
+    public void setDeck(Deck deck) {
+        this.deck = deck;
+    }
+
+
+    public Card pullCardFromDeck(Long playerId) {
+        if (playerId.equals(currentTurnPlayerId)) {
+            return deck.pullCard();
+        } else {
+            throw new IllegalArgumentException("It is not your turn");
+        }
     }
 }

@@ -20,45 +20,38 @@ public class GameService {
     private PlayerRepository playerRepository;
     @Autowired
     private GameRepository gameRepository;
+    @Autowired
+    private DeckService deckService;
 
     public Player savePlayer(Player player) {
         return playerRepository.save(player);
     }
 
     public Card startGame(Player player) {
-        List<Card> allCards = cardRepository.findAll();
-        Collections.shuffle(allCards); // Shuffle cards to randomize the deck
-        Game game = new Game(player, allCards, GameState.NOT_STARTED);
-        game = gameRepository.save(game); // Save the game to ensure persistence
 
-        player.setGame(game);
+        Game game = new Game(deckService.createDeck(), GameState.NOT_STARTED);
         playerRepository.save(player);
-
-        return drawCardFromDeck(game);
+        game.setGameState(GameState.IN_PROGRESS);
+        game = gameRepository.save(game);
+        return null;
     }
 
-    public Card getCard(Long playerId) {
+    public Card getCard(Long playerId, Long gameId) {
         Optional<Player> playerOpt = playerRepository.findById(playerId);
         if (playerOpt.isPresent()) {
             Player player = playerOpt.get();
-            Game game = player.getGame();
-            return drawCardFromDeck(game);
+            Game game = gameRepository.findById(gameId).orElse(null);
+            if (game == null) {
+                throw new IllegalArgumentException("Invalid game ID");
+            }
+            game.pullCardFromDeck(playerId);
         } else {
             throw new IllegalArgumentException("Invalid player ID");
         }
+        return null;
     }
 
     public boolean submitCard(Long playerId, Card card) {
-        Optional<Player> playerOpt = playerRepository.findById(playerId);
-        if (playerOpt.isPresent()) {
-            Player player = playerOpt.get();
-            Game game = player.getGame();
-            List<Card> timeline = player.getTimeline();
-            timeline.add(card);
-            player.setTimeline(timeline);
-            playerRepository.save(player);
-            return true;
-        }
         return false;
     }
 
@@ -92,16 +85,6 @@ public class GameService {
             }
         }
         return true;
-    }
-
-    private Card drawCardFromDeck(Game game) {
-        List<Card> deck = game.getCards();
-        if (deck.isEmpty()) {
-            throw new IllegalStateException("No more cards in the deck");
-        }
-        Card drawnCard = deck.remove(0);
-        gameRepository.save(game); // Update the game with the new state of the deck
-        return drawnCard;
     }
 
     public Map<String, Object> submitAndValidate(Long playerId, Card card) {

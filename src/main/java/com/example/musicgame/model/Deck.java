@@ -14,22 +14,22 @@ public class Deck {
     private Long id;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Card> cards;
+    private List<Card> cards;
 
     // Default constructor
     public Deck() {}
 
     // Constructor with cards
-    public Deck(Set<Card> cards) {
+    public Deck(List<Card> cards) {
         this.cards = cards;
     }
 
     // Getter and Setter for cards
-    public Set<Card> getCards() {
+    public List<Card> getCards() {
         return cards;
     }
 
-    public void setCards(Set<Card> cards) {
+    public void setCards(List<Card> cards) {
         this.cards = cards;
     }
 
