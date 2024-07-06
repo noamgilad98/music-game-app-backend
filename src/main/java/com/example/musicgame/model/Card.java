@@ -1,7 +1,5 @@
 package com.example.musicgame.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import javax.persistence.*;
 
 @Entity
@@ -13,23 +11,20 @@ public class Card {
 
     private String songName;
     private String artist;
-    private String previewUrl;
-    private String spotifyCode;
     private int year;
-    private boolean isFaceUp;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "timeline_id")
-    @JsonBackReference(value = "timeline-cards")
-    private TimeLine timeLine;
+    private String spotifyCode;
+    private String previewUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "deck_id")
-    @JsonBackReference(value = "deck-cards")
     private Deck deck;
 
-    public Card() {
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "timeline_id")
+    private TimeLine timeline;
+
+    // Constructors
+    public Card() {}
 
     public Card(String songName, String artist, int year, String spotifyCode, String previewUrl) {
         this.songName = songName;
@@ -88,27 +83,19 @@ public class Card {
         this.previewUrl = previewUrl;
     }
 
-    public boolean isFaceUp() {
-        return isFaceUp;
-    }
-
-    public void setFaceUp(boolean faceUp) {
-        isFaceUp = faceUp;
-    }
-
-    public TimeLine getTimeLine() {
-        return timeLine;
-    }
-
-    public void setTimeLine(TimeLine timeLine) {
-        this.timeLine = timeLine;
+    public Deck getDeck() {
+        return deck;
     }
 
     public void setDeck(Deck deck) {
         this.deck = deck;
     }
 
-    public Deck getDeck() {
-        return deck;
+    public TimeLine getTimeline() {
+        return timeline;
+    }
+
+    public void setTimeline(TimeLine timeline) {
+        this.timeline = timeline;
     }
 }

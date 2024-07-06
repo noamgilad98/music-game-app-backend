@@ -1,10 +1,6 @@
 package com.example.musicgame.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 public class Player {
@@ -17,15 +13,12 @@ public class Player {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
-    @JsonBackReference(value = "game-players")
     private Game game;
 
     @OneToOne(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "player-timeline")
     private TimeLine timeLine;
 
-    public Player() {
-    }
+    public Player() {}
 
     public Player(String name, Game game) {
         this.name = name;
@@ -62,12 +55,8 @@ public class Player {
         return timeLine;
     }
 
-    public void setTimeLine(TimeLine timeLine) {
+    public void setTimeline(TimeLine timeLine) {
         this.timeLine = timeLine;
-    }
-
-    public List<Card> getTimeline() {
-        return timeLine.getCards();
     }
 
     public void addCardToTimeline(Card card, int position) {

@@ -1,12 +1,11 @@
 package com.example.musicgame.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "timeLine")
 public class TimeLine {
 
     @Id
@@ -17,12 +16,12 @@ public class TimeLine {
     @JoinColumn(name = "player_id")
     private Player player;
 
-    @OneToMany(mappedBy = "timeLine", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "timeline-cards")
+    @OneToMany(mappedBy = "timeline", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Card> cards = new ArrayList<>();
 
-    public TimeLine() {
-    }
+
+    // Constructors
+    public TimeLine() {}
 
     public TimeLine(Player player) {
         this.player = player;
@@ -53,22 +52,18 @@ public class TimeLine {
         this.cards = cards;
     }
 
-
     public void addCard(Card card) {
         cards.add(card);
-        card.setTimeLine(this);
+        card.setTimeline(this);
     }
 
     public void removeCard(Card card) {
         cards.remove(card);
-        card.setTimeLine(null);
+        card.setTimeline(null);
     }
 
     public void addCardAtPosition(Card card, int position) {
-        if (position < 0 || position > cards.size()) {
-            throw new IndexOutOfBoundsException("Position out of bounds");
-        }
         cards.add(position, card);
-        card.setTimeLine(this);
+        card.setTimeline(this);
     }
 }

@@ -1,10 +1,8 @@
 package com.example.musicgame.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Deck {
@@ -13,22 +11,20 @@ public class Deck {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    @OneToOne(mappedBy = "deck")
+    private Game game;
 
     @OneToMany(mappedBy = "deck", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "deck-cards")
-    private List<Card> cards = new ArrayList<>();
+    private Set<Card> cards = new HashSet<>();
 
-    public Deck(List<Card> cards) {
+    // Constructors
+    public Deck() {}
+
+    public Deck(Set<Card> cards) {
         this.cards = cards;
     }
 
-    public Deck() {
-
-    }
-
-    // other fields, getters, and setters
-
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -37,26 +33,35 @@ public class Deck {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public Game getGame() {
+        return game;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setGame(Game game) {
+        this.game = game;
     }
 
-    public List<Card> getCards() {
+    public Set<Card> getCards() {
         return cards;
     }
 
-    public void setCards(List<Card> cards) {
+    public void setCards(Set<Card> cards) {
         this.cards = cards;
     }
 
+    public void addCard(Card card) {
+        cards.add(card);
+        card.setDeck(this);
+    }
+
+    public void removeCard(Card card) {
+        cards.remove(card);
+        card.setDeck(null);
+    }
+
     public Card drawCard() {
-        if (cards == null || cards.isEmpty()) {
-            return null;
-        }
-        return cards.remove(0);
+        Card card = cards.iterator().next();
+        cards.remove(card);
+        return card;
     }
 }

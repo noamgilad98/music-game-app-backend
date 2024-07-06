@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Entity
-@Table(name = "app_user")  // Renamed table
+@Table(name = "app_user")
 public class User implements UserDetails {
 
     @Id
@@ -16,6 +16,8 @@ public class User implements UserDetails {
     private Long id;
     private String username;
     private String password;
+
+    // Constructors, getters and setters
 
     // Default constructor
     public User() {}

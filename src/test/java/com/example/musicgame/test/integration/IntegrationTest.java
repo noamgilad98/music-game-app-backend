@@ -3,8 +3,7 @@ package com.example.musicgame.test.integration;
 import com.example.musicgame.model.Game;
 import com.example.musicgame.model.User;
 import com.example.musicgame.model.GameState;
-import com.example.musicgame.repository.GameRepository;
-import com.example.musicgame.repository.UserRepository;
+import com.example.musicgame.repository.*;
 import com.example.musicgame.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,14 +36,20 @@ public class IntegrationTest {
     private GameRepository gameRepository;
 
     @Autowired
-    private UserService userService;
+    private PlayerRepository playerRepository;
+
+    @Autowired
+    private CardRepository cardRepository;
+
+    @Autowired
+    private DeckRepository deckRepository;
 
     private RestTemplate restTemplate;
 
     @BeforeEach
     void setUp() {
+        gameRepository.deleteAllGames(); // Use custom delete method
         userRepository.deleteAll();
-        gameRepository.deleteAll();
         this.restTemplate = new RestTemplate();
     }
 
